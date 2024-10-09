@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>หน้าแอดมินทีมขาวแดง</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons (optional) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar-custom {
+            background-color: #dc3545; /* สีแดง Bootstrap */
+        }
+        .navbar-custom .nav-link {
+            color: white;
+        }
+        .navbar-custom .nav-link:hover {
+            color: #f8f9fa;
+        }
+        .section {
+            display: none;
+            padding: 20px;
+        }
+        .active-section {
+            display: block;
+        }
+        .table-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .btn-custom {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #c82333;
+            color: white;
+        }
+        .modal-confirm {        
+            color: #434e65;
+            width: 400px;
+        }
+        .modal-confirm .modal-content {
+            padding: 20px;
+            border-radius: 5px;
+            border: none;
+        }
+        .modal-confirm .modal-header {
+            border-bottom: none;   
+            position: relative;
+        }
+        .modal-confirm h4 {
+            text-align: center;
+            font-size: 26px;
+            margin: 30px 0 -15px;
+        }
+        .modal-confirm .close {
+            position: absolute;
+            top: -5px;
+            right: -2px;
+        }
+        .modal-confirm .modal-body {
+            color: #999;
+        }
+        .modal-confirm .modal-footer {
+            border: none;
+            text-align: center;        
+            border-radius: 5px;
+            font-size: 13px;
+        }   
+        .modal-confirm .icon-box {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            border-radius: 50%;
+            z-index: 9;
+            text-align: center;
+            border: 3px solid #f15e5e;
+        }
+        .modal-confirm .icon-box i {
+            color: #f15e5e;
+            font-size: 46px;
+            display: inline-block;
+            margin-top: 13px;
+        }
+        .modal-confirm .btn {
+            color: #fff;
+            border-radius: 4px;
+            background: #dc3545;
+            text-decoration: none;
+            transition: all 0.4s;
+            line-height: normal;
+            border: none;
+        }
+        .modal-confirm .btn:hover, .modal-confirm .btn:focus {
+            background: #bd2130;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .success {
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="#">ทีมขาวแดง</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showSection('dashboard')">หน้าหลัก</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('addStudent')">เพิ่มนักเรียน</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('addTeacher')">เพิ่มคุณครู</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('manageStudents')">จัดการนักเรียน</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('manageTeachers')">จัดการคุณครู</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('attendance')">เช็คชื่อ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('summary')">สรุปการมาเรียน</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Container -->
+    <div class="container my-4">
+
+        <!-- หน้าหลัก -->
+        <div id="dashboard" class="section active-section">
+            <h1 class="mb-4">ยินดีต้อนรับสู่หน้าแอดมิน</h1>
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4>ข่าวสาร</h4>
+                </div>
+                <div class="card-body">
+                    <div id="announcementList" class="mb-4">
+                        <!-- ข่าวสารจะแสดงที่นี่ -->
+                    </div>
+                    <h5>เพิ่มข่าวสาร</h5>
+                    <form id="announcementForm">
+                        <div class="mb-3">
+                            <label for="announcementTitle" class="form-label">หัวข้อ</label>
+                            <input type="text" class="form-control" id="announcementTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="announcementContent" class="form-label">รายละเอียด</label>
+                            <textarea class="form-control" id="announcementContent" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-danger">เพิ่มข่าวสาร</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- เพิ่มนักเรียน -->
+        <div id="addStudent" class="section">
+            <h2 class="mb-4">เพิ่มข้อมูลนักเรียน</h2>
+            <div id="studentMessage"></div>
+            <form id="studentForm">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="student_id" class="form-label">รหัสนักเรียน</label>
+                        <input type="text" class="form-control" id="student_id" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="student_grade_level" class="form-label">ระดับชั้น</label>
+                        <select class="form-select" id="student_grade_level" required>
+                            <option value="">เลือกระดับชั้น</option>
+                            <option value="1">ม.1</option>
+                            <option value="2">ม.2</option>
+                            <option value="3">ม.3</option>
+                            <option value="4">ม.4</option>
+                            <option value="5">ม.5</option>
+                            <option value="6">ม.6</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="student_first_name" class="form-label">ชื่อ</label>
+                        <input type="text" class="form-control" id="student_first_name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="student_last_name" class="form-label">นามสกุล</label>
+                        <input type="text" class="form-control" id="student_last_name" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="student_password" class="form-label">รหัสผ่าน</label>
+                        <input type="password" class="form-control" id="student_password" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="student_room" class="form-label">ห้อง</label>
+                        <input type="text" class="form-control" id="student_room" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">เพิ่มนักเรียน</button>
+            </form>
+        </div>
+
+        <!-- เพิ่มคุณครู -->
+        <div id="addTeacher" class="section">
+            <h2 class="mb-4">เพิ่มข้อมูลคุณครู</h2>
+            <div id="teacherMessage"></div>
+            <form id="teacherForm">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="teacher_id" class="form-label">รหัสประจำตัวครู</label>
+                        <input type="text" class="form-control" id="teacher_id" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="teacher_grade_level" class="form-label">ระดับชั้น</label>
+                        <select class="form-select" id="teacher_grade_level" required>
+                            <option value="">เลือกระดับชั้น</option>
+                            <option value="1">ม.1</option>
+                            <option value="2">ม.2</option>
+                            <option value="3">ม.3</option>
+                            <option value="4">ม.4</option>
+                            <option value="5">ม.5</option>
+                            <option value="6">ม.6</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="teacher_first_name" class="form-label">ชื่อ</label>
+                        <input type="text" class="form-control" id="teacher_first_name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="teacher_last_name" class="form-label">นามสกุล</label>
+                        <input type="text" class="form-control" id="teacher_last_name" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="teacher_password" class="form-label">รหัสผ่าน</label>
+                        <input type="password" class="form-control" id="teacher_password" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="teacher_room" class="form-label">ห้อง</label>
+                        <input type="text" class="form-control" id="teacher_room" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="teacher_subject_group" class="form-label">กลุ่มสาระ</label>
+                    <input type="text" class="form-control" id="teacher_subject_group" required>
+                </div>
+                <button type="submit" class="btn btn-success">เพิ่มคุณครู</button>
+            </form>
+        </div>
+
+        <!-- จัดการนักเรียน -->
+        <div id="manageStudents" class="section">
+            <h2 class="mb-4">จัดการข้อมูลนักเรียน</h2>
+            <div class="table-responsive table-wrapper">
+                <table class="table table-striped" id="studentsTable">
+                    <table class="table table-striped" id="studentsTable">
+                        <thead class="table-danger">
+                            <tr>
+                                <th>รหัสนักเรียน</th>
+                                <th>ชื่อ</th>
+                                <th>นามสกุล</th>
+                                <th>ระดับชั้น</th>
+                                <th>ห้อง</th>
+                                <th>การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>001</td>
+                                <td>สมชาย</td>
+                                <td>ใจดี</td>
+                                <td>ม.6</td>
+                                
+                                <td>
+                                    <button class="btn btn-danger">ลบ</button>
+                                    <button class="btn btn-warning">แก้ไข</button>
+                                </td>
+                            </tr>
+                            <!-- ข้อมูลนักเรียนเพิ่มเติม -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <!-- จัดการคุณครู -->
+        <div id="manageTeachers" class="section">
+            <h2 class="mb-4">จัดการข้อมูลคุณครู</h2>
+            <div class="table-responsive table-wrapper">
+                <table class="table table-striped" id="teachersTable">
+                    <thead class="table-danger">
+                        <tr>
+                            <th>รหัสครู</th>
+                            <th>ชื่อ</th>
+                            <th>นามสกุล</th>
+                            <th>ระดับชั้น</th>
+                            <th>ห้อง</th>
+                            <th>กลุ่มสาระ</th>
+                            <th>การจัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- ข้อมูลคุณครูจะแสดงที่นี่ -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- เช็คชื่อ -->
+        <div id="attendance" class="section">
+            <h2 class="mb-4">เช็คชื่อ</h2>
+            <form id="attendanceForm" class="mb-4">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="attendance_grade_level" class="form-label">ระดับชั้น</label>
+                        <select class="form-select" id="attendance_grade_level" required>
+                            <option value="">เลือกระดับชั้น</option>
+                            <option value="1">ม.1</option>
+                            <option value="2">ม.2</option>
+                            <option value="3">ม.3</option>
+                            <option value="4">ม.4</option>
+                            <option value="5">ม.5</option>
+                            <option value="6">ม.6</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="attendance_room" class="form-label">ห้อง</label>
+                        <input type="text" class="form-control" id="attendance_room" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="attendance_date" class="form-label">วันที่</label>
+                        <input type="date" class="form-control" id="attendance_date" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">โหลดนักเรียน</button>
+            </form>
+            <div id="attendanceList"></div>
+            <button class="btn btn-success mt-3" onclick="saveAttendance()">บันทึกการเช็คชื่อ</button>
+        </div>
+
+        <!-- สรุปการมาเรียน -->
+        <div id="summary" class="section">
+            <h2 class="mb-4">สรุปการมาเรียน</h2>
+            <form id="summaryForm" class="mb-4">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="summary_type" class="form-label">ประเภทการสรุป</label>
+                        <select class="form-select" id="summary_type" required>
+                            <option value="">เลือกประเภท</option>
+                            <option value="daily">รายวัน</option>
+                            <option value="monthly">รายเดือน</option>
+                            <option value="term">รายเทอม</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4" id="summary_date_group">
+                        <label for="summary_date" class="form-label">เลือกวันที่</label>
+                        <input type="date" class="form-control" id="summary_date">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">แสดงสรุป</button>
+                    </div>
+                </div>
+            </form>
+            <div id="summaryResult" class="mb-4"></div>
+            <button class="btn btn-success" onclick="downloadCSV()">ดาวน์โหลดข้อมูล</button>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS and dependencies (Popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // การแสดงส่วนต่างๆ
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active-section');
+            });
+            document.getElementById(sectionId).classList.add('active-section');
+
+            // โหลดข้อมูลเมื่อแสดงแต่ละส่วน
+            if(sectionId === 'dashboard') {
+                loadAnnouncements();
+            } else if(sectionId === 'manageStudents') {
+                loadStudents();
+            } else if(sectionId === 'manageTeachers') {
+                loadTeachers();
+            }
+        }
+
+        // ข่าวสาร
+        document.getElementById('announcementForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            addAnnouncement();
+        });
+
+        function loadAnnouncements() {
+            const announcements = JSON.parse(localStorage.getItem('announcements')) || [];
+            const announcementList = document.getElementById('announcementList');
+            announcementList.innerHTML = '';
+            if(announcements.length === 0) {
+                announcementList.innerHTML = '<p>ไม่มีข่าวสาร</p>';
+                return;
+            }
+            announcements.forEach((a, index) => {
+                const div = document.createElement('div');
+                div.classList.add('mb-3');
+                div.innerHTML = `
+                    <h5>${a.title}</h5>
+                    <p>${a.content}</p>
+                    <small>โพสต์เมื่อ: ${a.date}</small>
+                    <button class="btn btn-sm btn-danger" onclick="deleteAnnouncement(${index})"><i class="bi bi-trash"></i> ลบ</button>
+                    <hr>
+                `;
+                announcementList.appendChild(div);
+            });
+        }
+
+        function addAnnouncement() {
+            const title = document.getElementById('announcementTitle').value.trim();
+            const content = document.getElementById('announcementContent').value.trim();
+
+            if(title === '' || content === '') {
+                alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+                return;
+            }
+
+            const announcements = JSON.parse(localStorage.getItem('announcements')) || [];
+            announcements.unshift({
+                title: title,
+                content: content,
+                date: new Date().toLocaleString()
+            });
+            localStorage.setItem('announcements', JSON.stringify(announcements));
+
+            document.getElementById('announcementTitle').value = '';
+            document.getElementById('announcementContent').value = '';
+
+            loadAnnouncements();
+        }
+
+        function deleteAnnouncement(index) {
+            if(confirm('คุณแน่ใจหรือว่าต้องการลบข่าวสารนี้?')) {
+                let announcements = JSON.parse(localStorage.getItem('announcements')) || [];
+                announcements.splice(index, 1);
+                localStorage.setItem('announcements', JSON.stringify(announcements));
+                loadAnnouncements();
+            }
+        }
+
+        // นักเรียน
+        document.getElementById('studentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            addStudent();
+        });
+
+        function addStudent() {
+            const student_id = document.getElementById('student_id').value.trim();
+            const first_name = document.getElementById('student_first_name').value.trim();
+            const last_name = document.getElementById('student_last_name').value.trim();
+            const password = document.getElementById('student_password').value.trim();
+            const grade_level = document.getElementById('student_grade_level').value;
+            const room = document.getElementById('student_room').value.trim();
+
+            if(!student_id || !first_name || !last_name || !password || !grade_level || !room) {
+                document.getElementById('studentMessage').innerHTML = '<div class="alert alert-danger">กรุณากรอกข้อมูลให้ครบทุกช่อง</div>';
+                return;
+            }
+
+            let students = JSON.parse(localStorage.getItem('students')) || [];
+
+            // ตรวจสอบรหัสนักเรียนซ้ำ
+            if(students.some(s => s.student_id === student_id)) {
+                document.getElementById('studentMessage').innerHTML = '<div class="alert alert-danger">รหัสนักเรียนนี้มีอยู่ในระบบแล้ว</div>';
+                return;
+            }
+
+            students.push({
+                student_id,
+                first_name,
+                last_name,
+                password, // ในการใช้งานจริง ควรเข้ารหัสรหัสผ่าน
+                grade_level,
+                room
+            });
+
+            localStorage.setItem('students', JSON.stringify(students));
+
+            document.getElementById('studentMessage').innerHTML = '<div class="alert alert-success">เพิ่มข้อมูลนักเรียนสำเร็จ</div>';
+
+            // ล้างฟอร์ม
+            document.getElementById('studentForm').reset();
+        }
+
+        function loadStudents() {
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const tableBody = document.querySelector('#studentsTable tbody');
+            tableBody.innerHTML = '';
+
+            if(students.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center">ไม่มีข้อมูลนักเรียน</td></tr>';
+                return;
+            }
+
+            students.forEach((student, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.student_id}</td>
+                    <td>${student.first_name}</td>
+                    <td>${student.last_name}</td>
+                    <td>${student.grade_level}</td>
+                    <td>${student.room}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="deleteStudent(${index})"><i class="bi bi-trash"></i> ลบ</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function deleteStudent(index) {
+            if(confirm('คุณแน่ใจหรือว่าต้องการลบนักเรียนคนนี้?')) {
+                let students = JSON.parse(localStorage.getItem('students')) || [];
+                students.splice(index, 1);
+                localStorage.setItem('students', JSON.stringify(students));
+                loadStudents();
+            }
+        }
+
+        // คุณครู
+        document.getElementById('teacherForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            addTeacher();
+        });
+
+        function addTeacher() {
+            const teacher_id = document.getElementById('teacher_id').value.trim();
+            const first_name = document.getElementById('teacher_first_name').value.trim();
+            const last_name = document.getElementById('teacher_last_name').value.trim();
+            const password = document.getElementById('teacher_password').value.trim();
+            const grade_level = document.getElementById('teacher_grade_level').value;
+            const room = document.getElementById('teacher_room').value.trim();
+            const subject_group = document.getElementById('teacher_subject_group').value.trim();
+
+            if(!teacher_id || !first_name || !last_name || !password || !grade_level || !room || !subject_group) {
+                document.getElementById('teacherMessage').innerHTML = '<div class="alert alert-danger">กรุณากรอกข้อมูลให้ครบทุกช่อง</div>';
+                return;
+            }
+
+            let teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+
+            // ตรวจสอบรหัสครูซ้ำ
+            if(teachers.some(t => t.teacher_id === teacher_id)) {
+                document.getElementById('teacherMessage').innerHTML = '<div class="alert alert-danger">รหัสครูนี้มีอยู่ในระบบแล้ว</div>';
+                return;
+            }
+
+            teachers.push({
+                teacher_id,
+                first_name,
+                last_name,
+                password, // ในการใช้งานจริง ควรเข้ารหัสรหัสผ่าน
+                grade_level,
+                room,
+                subject_group
+            });
+
+            localStorage.setItem('teachers', JSON.stringify(teachers));
+
+            document.getElementById('teacherMessage').innerHTML = '<div class="alert alert-success">เพิ่มข้อมูลคุณครูสำเร็จ</div>';
+
+            // ล้างฟอร์ม
+            document.getElementById('teacherForm').reset();
+        }
+
+        function loadTeachers() {
+            const teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+            const tableBody = document.querySelector('#teachersTable tbody');
+            tableBody.innerHTML = '';
+
+            if(teachers.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="7" class="text-center">ไม่มีข้อมูลคุณครู</td></tr>';
+                return;
+            }
+
+            teachers.forEach((teacher, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${teacher.teacher_id}</td>
+                    <td>${teacher.first_name}</td>
+                    <td>${teacher.last_name}</td>
+                    <td>${teacher.grade_level}</td>
+                    <td>${teacher.room}</td>
+                    <td>${teacher.subject_group}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="deleteTeacher(${index})"><i class="bi bi-trash"></i> ลบ</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function deleteTeacher(index) {
+            if(confirm('คุณแน่ใจหรือว่าต้องการลบคุณครูคนนี้?')) {
+                let teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+                teachers.splice(index, 1);
+                localStorage.setItem('teachers', JSON.stringify(teachers));
+                loadTeachers();
+            }
+        }
+
+        // เช็คชื่อ
+        document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            loadAttendance();
+        });
+
+        function loadAttendance() {
+            const grade_level = document.getElementById('attendance_grade_level').value;
+            const room = document.getElementById('attendance_room').value.trim();
+            const date = document.getElementById('attendance_date').value;
+
+            if(!grade_level || !room || !date) {
+                alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+                return;
+            }
+
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const filteredStudents = students.filter(s => s.grade_level == grade_level && s.room.toLowerCase() === room.toLowerCase());
+
+            let attendanceList = document.getElementById('attendanceList');
+            attendanceList.innerHTML = '';
+
+            if(filteredStudents.length === 0) {
+                attendanceList.innerHTML = '<p>ไม่พบข้อมูลนักเรียนสำหรับห้องนี้</p>';
+                return;
+            }
+
+            // ดึงข้อมูลการเช็คชื่อที่มีอยู่แล้วถ้ามี
+            let attendanceRecords = JSON.parse(localStorage.getItem('attendance')) || {};
+            let key = `${grade_level}_${room}_${date}`;
+            let currentAttendance = attendanceRecords[key] || {};
+
+            // สร้างตารางเช็คชื่อ
+            const table = document.createElement('table');
+            table.classList.add('table', 'table-bordered');
+            table.innerHTML = `
+                <thead class="table-primary">
+                    <tr>
+                        <th>รหัสนักเรียน</th>
+                        <th>ชื่อ</th>
+                        <th>นามสกุล</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${filteredStudents.map(student => `
+                        <tr>
+                            <td>${student.student_id}</td>
+                            <td>${student.first_name}</td>
+                            <td>${student.last_name}</td>
+                            <td>
+                                <select class="form-select" data-student-id="${student.student_id}">
+                                    <option value="มา" ${currentAttendance[student.student_id] === 'มา' ? 'selected' : ''}>มา</option>
+                                    <option value="ขาด" ${currentAttendance[student.student_id] === 'ขาด' ? 'selected' : ''}>ขาด</option>
+                                    <option value="สาย" ${currentAttendance[student.student_id] === 'สาย' ? 'selected' : ''}>สาย</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+            attendanceList.appendChild(table);
+        }
+
+        function saveAttendance() {
+            const grade_level = document.getElementById('attendance_grade_level').value;
+            const room = document.getElementById('attendance_room').value.trim();
+            const date = document.getElementById('attendance_date').value;
+
+            if(!grade_level || !room || !date) {
+                alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+                return;
+            }
+
+            const selects = document.querySelectorAll('#attendanceList select');
+            let attendanceData = {};
+
+            selects.forEach(select => {
+                const student_id = select.getAttribute('data-student-id');
+                const status = select.value;
+                attendanceData[student_id] = status;
+            });
+
+            let attendanceRecords = JSON.parse(localStorage.getItem('attendance')) || {};
+            let key = `${grade_level}_${room}_${date}`;
+            attendanceRecords[key] = attendanceData;
+            localStorage.setItem('attendance', JSON.stringify(attendanceRecords));
+
+            alert('บันทึกการเช็คชื่อสำเร็จ');
+        }
+
+        // สรุปการมาเรียน
+        document.getElementById('summaryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateSummary();
+        });
+
+        document.getElementById('summary_type').addEventListener('change', function() {
+            const type = this.value;
+            const dateGroup = document.getElementById('summary_date_group');
+            if(type === 'daily') {
+                dateGroup.style.display = 'block';
+                document.getElementById('summary_date').required = true;
+            } else if(type === 'monthly') {
+                dateGroup.style.display = 'block';
+                document.getElementById('summary_date').required = false;
+                document.getElementById('summary_date').type = 'month';
+            } else if(type === 'term') {
+                dateGroup.style.display = 'none';
+                document.getElementById('summary_date').required = false;
+            } else {
+                dateGroup.style.display = 'none';
+                document.getElementById('summary_date').required = false;
+            }
+        });
+
+        function generateSummary() {
+            const type = document.getElementById('summary_type').value;
+            const dateInput = document.getElementById('summary_date').value;
+            const summaryResult = document.getElementById('summaryResult');
+            summaryResult.innerHTML = '';
+
+            if(!type) {
+                alert('กรุณาเลือกประเภทการสรุป');
+                return;
+            }
+
+            let summary = {};
+            const attendanceRecords = JSON.parse(localStorage.getItem('attendance')) || {};
+
+            if(type === 'daily') {
+                if(!dateInput) {
+                    alert('กรุณาเลือกวันที่');
+                    return;
+                }
+                const targetDate = new Date(dateInput).toLocaleDateString();
+                for(let key in attendanceRecords) {
+                    const parts = key.split('_');
+                    const recordDate = new Date(parts.slice(2).join('-')).toLocaleDateString();
+                    if(recordDate === targetDate) {
+                        const records = attendanceRecords[key];
+                        for(let student_id in records) {
+                            if(!summary[student_id]) summary[student_id] = { มา: 0, ขาด: 0, สาย: 0 };
+                            summary[student_id][records[student_id]]++;
+                        }
+                    }
+                }
+            } else if(type === 'monthly') {
+                if(!dateInput) {
+                    alert('กรุณาเลือกเดือน');
+                    return;
+                }
+                const [year, month] = dateInput.split('-');
+                for(let key in attendanceRecords) {
+                    const parts = key.split('_');
+                    const recordDate = new Date(parts.slice(2).join('-'));
+                    if(recordDate.getFullYear() == year && (recordDate.getMonth() + 1) == parseInt(month)) {
+                        const records = attendanceRecords[key];
+                        for(let student_id in records) {
+                            if(!summary[student_id]) summary[student_id] = { มา: 0, ขาด: 0, สาย: 0 };
+                            summary[student_id][records[student_id]]++;
+                        }
+                    }
+                }
+            } else if(type === 'term') {
+                // สมมติว่า term 1: ม.ค - มิ.ย, term 2: ก.ค - ธ.ค
+                for(let key in attendanceRecords) {
+                    const parts = key.split('_');
+                    const recordDate = new Date(parts.slice(2).join('-'));
+                    const month = recordDate.getMonth() + 1;
+                    let term;
+                    if(month >= 1 && month <= 6) {
+                        term = 'Term 1';
+                    } else {
+                        term = 'Term 2';
+                    }
+                    if(!summary[term]) summary[term] = {};
+                    const records = attendanceRecords[key];
+                    for(let student_id in records) {
+                        if(!summary[term][student_id]) summary[term][student_id] = { มา: 0, ขาด: 0, สาย: 0 };
+                        summary[term][student_id][records[student_id]]++;
+                    }
+                }
+            }
+
+            if(Object.keys(summary).length === 0) {
+                summaryResult.innerHTML = '<p>ไม่พบข้อมูลสรุป</p>';
+                return;
+            }
+
+            // สร้างตารางสรุป
+            let tableHTML = `
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>รหัสนักเรียน</th>
+                                <th>ชื่อ</th>
+                                <th>นามสกุล</th>
+                                <th>มา</th>
+                                <th>ขาด</th>
+                                <th>สาย</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+
+            if(type === 'term') {
+                for(let term in summary) {
+                    tableHTML += `<tr><th colspan="6" class="text-center">${term}</th></tr>`;
+                    for(let student_id in summary[term]) {
+                        const student = students.find(s => s.student_id === student_id);
+                        if(student) {
+                            tableHTML += `
+                                <tr>
+                                    <td>${student.student_id}</td>
+                                    <td>${student.first_name}</td>
+                                    <td>${student.last_name}</td>
+                                    <td>${summary[term][student_id]['มา'] || 0}</td>
+                                    <td>${summary[term][student_id]['ขาด'] || 0}</td>
+                                    <td>${summary[term][student_id]['สาย'] || 0}</td>
+                                </tr>
+                            `;
+                        }
+                    }
+                }
+            } else {
+                for(let student_id in summary) {
+                    const student = students.find(s => s.student_id === student_id);
+                    if(student) {
+                        tableHTML += `
+                            <tr>
+                                <td>${student.student_id}</td>
+                                <td>${student.first_name}</td>
+                                <td>${student.last_name}</td>
+                                <td>${summary[student_id]['มา'] || 0}</td>
+                                <td>${summary[student_id]['ขาด'] || 0}</td>
+                                <td>${summary[student_id]['สาย'] || 0}</td>
+                            </tr>
+                        `;
+                    }
+                }
+            }
+
+            tableHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            summaryResult.innerHTML = tableHTML;
+        }
+
+        function downloadCSV() {
+            const table = document.querySelector('#summaryResult table');
+            if(!table) {
+                alert('ไม่มีข้อมูลที่จะดาวน์โหลด');
+                return;
+            }
+
+            let csv = [];
+            const rows = table.querySelectorAll('tr');
+
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('th, td');
+                const rowData = [];
+                cols.forEach(col => {
+                    rowData.push('"' + col.innerText.replace(/"/g, '""') + '"');
+                });
+                csv.push(rowData.join(','));
+            });
+
+            const csvContent = "data:text/csv;charset=utf-8," + csv.join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            const filename = `summary_${new Date().toISOString().slice(0,10)}.csv`;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // เริ่มต้นโหลดข่าวสาร
+        window.onload = function() {
+            showSection('dashboard');
+        };
+    </script>
+
+</body>
+</html>
+

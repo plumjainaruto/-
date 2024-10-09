@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>หน้าอาจารย์</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar-custom {
+            background-color: #dc3545; /* สีแดง */
+        }
+        .navbar-custom .nav-link {
+            color: white;
+        }
+        .navbar-custom .nav-link:hover {
+            color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="#">คุณครู</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="TeacherPage.html">หน้าหลัก</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="หน้าจัดการนักเรียน.html">จัดการนักเรียน</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="หน้าผลสรุปการมาเรียน.html">ดูผลสรุปการมาเรียน</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="เช็ดชื่อ.html">เช็ดชื่อ</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Attendance Section -->
+    <div id="attendance" class="section container mt-4">
+        <h2 class="mb-4">เช็คชื่อ</h2>
+        <form id="attendanceForm" class="mb-4" onsubmit="loadStudents(event)">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="attendance_grade_level" class="form-label">ระดับชั้น</label>
+                    <select class="form-select" id="attendance_grade_level" required>
+                        <option value="">เลือกระดับชั้น</option>
+                        <option value="1">ม.1</option>
+                        <option value="2">ม.2</option>
+                        <option value="3">ม.3</option>
+                        <option value="4">ม.4</option>
+                        <option value="5">ม.5</option>
+                        <option value="6">ม.6</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="attendance_room" class="form-label">ห้อง</label>
+                    <select class="form-select" id="attendance_room" required>
+                        <option value="">เลือกห้อง</option>
+                        <!-- เพิ่มตัวเลือกห้อง 1-17 -->
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="attendance_date" class="form-label">วันที่</label>
+                    <input type="date" class="form-control" id="attendance_date" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">โหลดนักเรียน</button>
+        </form>
+
+        <div id="attendanceList" class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>รหัสนักเรียน</th>
+                        <th>ชื่อ</th>
+                        <th>นามสกุล</th>
+                        <th>สถานะการเช็คชื่อ</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                    <!-- รายชื่อนักเรียนจะแสดงที่นี่ -->
+                </tbody>
+            </table>
+        </div>
+
+        <button class="btn btn-success mt-3" onclick="saveAttendance()">บันทึกการเช็คชื่อ</button>
+    </div>
+
+    <script>
+        // ฟังก์ชันโหลดรายชื่อนักเรียน
+        function loadStudents(event) {
+            event.preventDefault();
+            
+            const students = [
+                { id: '001', firstName: 'สมชาย', lastName: 'ใจดี' },
+                { id: '002', firstName: 'สมศรี', lastName: 'รัตนา' },
+                { id: '003', firstName: 'ณรงค์', lastName: 'เมืองทอง' },
+                { id: '004', firstName: 'ปลื้มใน', lastName: 'สุดหล่อ' } // ชื่อนักเรียนสมมุติ
+            ];
+
+            const studentTableBody = document.getElementById('studentTableBody');
+            studentTableBody.innerHTML = ''; // ล้างข้อมูลก่อนแสดงใหม่
+
+            students.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td>${student.firstName}</td>
+                    <td>${student.lastName}</td>
+                    <td>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="attendance_${student.id}" id="present_${student.id}" value="มา" required>
+                            <label class="form-check-label" for="present_${student.id}">มา</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="attendance_${student.id}" id="absent_${student.id}" value="ไม่มา" required>
+                            <label class="form-check-label" for="absent_${student.id}">ไม่มา</label>
+                        </div>
+                    </td>
+                `;
+                studentTableBody.appendChild(row);
+            });
+        }
+
+        // ฟังก์ชันบันทึกการเช็คชื่อ
+        function saveAttendance() {
+            const students = document.querySelectorAll('#studentTableBody tr');
+            const attendanceData = [];
+
+            students.forEach(studentRow => {
+                const studentId = studentRow.querySelector('td:first-child').textContent;
+                const isPresent = studentRow.querySelector('input[name="attendance_' + studentId + '"]:checked').value;
+
+                attendanceData.push({
+                    id: studentId,
+                    status: isPresent
+                });
+            });
+
+            console.log('บันทึกการเช็คชื่อ:', attendanceData);
+            alert('บันทึกการเช็คชื่อเรียบร้อยแล้ว!');
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
